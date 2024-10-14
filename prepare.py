@@ -12,7 +12,6 @@ import SimpleITK as sitk
 import SimpleITK as sitk
 import skimage.io as io
 import sys, os
-import numpy as np
 
 
 def MaxMinNormalization(x,Max,Min):
