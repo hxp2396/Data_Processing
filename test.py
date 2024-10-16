@@ -125,34 +125,8 @@ from glob import glob
 # plt.show()
 
 
-# 1
-# (mean=(0.3589057922363281,),std=(0.220982164144516,))#train
-# (mean=(0.35954394936561584,), std=(0.22119909524917603,))#valid
-# (mean=(0.35319095849990845,), std=(0.21809816360473633,))#test
-# 2
-# (mean=(0.56125474,), std=(0.23397951,))  # train
-# (mean=(0.5627737,), std=(0.23380543,))  # valid
-# (mean=(0.5587516,), std=(0.23418126,))  # test
 
-#-------------------标签显化-------------------------------------------------------------
-
-# import os
-# from glob import glob
-# path=r'C:\Users\hxp\Desktop\DataCollection\TCGA-2Z-A9J9-01A-01-TS1.png'
-# filelist=glob(r'E:\DataCollection\Synapse\test\Masks\*.png')
-# # print(filelist)
-# for name in filelist:
-#     img=cv2.imread(name)
-#     img=img*31.875
-#     filename=os.path.split(name)[-1]
-#     cv2.imwrite('test_mask/'+filename,img)
-#     # print(filename)
-#
-# path=r'E:\DataCollection\pred\case0001_slice_75.png'
-# img=cv2.imread(path,0)
-# print(np.unique(img))
 # --------------------#计算Dice-----------------------------------------------------------------
-
 # def cal_dice(seg, gt, classes=9, background_id=0):
 #     channel_dice = []
 #     a=np.array(np.unique(seg))
@@ -202,15 +176,11 @@ from glob import glob
 from matplotlib import image as mpimg
 # from pyExcelerator.Workbook import Workbook
 from scipy.ndimage import io
-
 from skimage.color import gray2rgb
-
-
 '''
 windows下批量将json转化为标签，先进入只存放json的目录，然后进入cmd,输入for /r %i in (*) do labelme_json_to_dataset %i
 cd D:\json
 for /r %i in (*) do labelme_json_to_dataset %i
-
 '''
 # 调用labelme库中原有的 labelme_json_to_dataset 为核心
 # 批量将文件夹中的json文件转换，并抽取对应图片至各自文件夹
@@ -218,8 +188,6 @@ for /r %i in (*) do labelme_json_to_dataset %i
 # import os
 # import shutil
 # import argparse
-#
-#
 # def GetArgs():
 #     parser = argparse.ArgumentParser(description='将labelme标注后的json文件批量转换为图片')
 #     parser.add_argument('--input', '-i', default='Ultr/ultra_new/', help='json文件目录')
