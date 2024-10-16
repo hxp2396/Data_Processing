@@ -1,89 +1,71 @@
 #!/usr/bin/env pytho
 # -*- coding: utf-8 -*-
 # @Author  :
-# @annotation :计算二维图像的面积和周长
-import PIL.Image
-import cv2 as cv
+# @annotation :计算二维图像的面积
 import numpy as np
-def show(img):
-    img=PIL.Image.fromarray(img)
-    img.show()
-class ShapeAnalysis:
-    def __init__(self):
-        self.shapes = {'triangle': 0, 'rectangle': 0, 'polygons': 0, 'circles': 0}
-    def analysis(self, frame):
-        h, w, ch = frame.shape
-        result = np.zeros((h, w, ch), dtype=np.uint8)
-        # 二值化图像
-        print("start to detect lines...\n")
-        gray = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
-        ret, binary = cv.threshold(gray, 0, 255, cv.THRESH_BINARY_INV | cv.THRESH_OTSU)
-        # cv.imshow("input image", frame)
-        show(frame)
-        contours, hierarchy = cv.findContours(binary, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
-        for cnt in range(len(contours)):
-            # 提取与绘制轮廓
-            cv.drawContours(result, contours, cnt, (0, 255, 0), 2)
-            # 轮廓逼近
-            epsilon = 0.01 * cv.arcLength(contours[cnt], True)
-            approx = cv.approxPolyDP(contours[cnt], epsilon, True)
-            # 分析几何形状
-            corners = len(approx)
-            shape_type = ""
-            if corners == 3:
-                count = self.shapes['triangle']
-                count = count+1
-                self.shapes['triangle'] = count
-                shape_type = "三角形"
-            if corners == 4:
-                count = self.shapes['rectangle']
-                count = count + 1
-                self.shapes['rectangle'] = count
-                shape_type = "矩形"
-            if corners >= 10:
-                count = self.shapes['circles']
-                count = count + 1
-                self.shapes['circles'] = count
-                shape_type = "圆形"
-            if 4 < corners < 10:
-                count = self.shapes['polygons']
-                count = count + 1
-                self.shapes['polygons'] = count
-                shape_type = "多边形"
-            # 求解中心位置
-            mm = cv.moments(contours[cnt])
-            cx = int(mm['m10'] / mm['m00'])
-            cy = int(mm['m01'] / mm['m00'])
-            cv.circle(result, (cx, cy), 3, (0, 0, 255), -1)
-            # 颜色分析
-            color = frame[cy][cx]
-            color_str = "(" + str(color[0]) + ", " + str(color[1]) + ", " + str(color[2]) + ")"
-            # 计算面积与周长
-            p = cv.arcLength(contours[cnt], True)
-            area = cv.contourArea(contours[cnt])
-            print("周长: %.3f, 面积: %.3f 颜色: %s 形状: %s "% (p, area, color_str, shape_type))
-        show(self.draw_text_info(result))
-        # cv.imshow("Analysis Result", self.draw_text_info(result))
-        cv.imwrite("test-result.png", self.draw_text_info(result))
-        return self.shapes
-    def draw_text_info(self, image):
-        c1 = self.shapes['triangle']
-        c2 = self.shapes['rectangle']
-        c3 = self.shapes['polygons']
-        c4 = self.shapes['circles']
-        cv.putText(image, "triangle: "+str(c1), (10, 20), cv.FONT_HERSHEY_PLAIN, 1.2, (255, 0, 0), 1)
-        cv.putText(image, "rectangle: " + str(c2), (10, 40), cv.FONT_HERSHEY_PLAIN, 1.2, (255, 0, 0), 1)
-        cv.putText(image, "polygons: " + str(c3), (10, 60), cv.FONT_HERSHEY_PLAIN, 1.2, (255, 0, 0), 1)
-        cv.putText(image, "circles: " + str(c4), (10, 80), cv.FONT_HERSHEY_PLAIN, 1.2, (255, 0, 0), 1)
-        return image
+import cv2 as cv
+class AreaEstimator:
+    """
+    A class that can estimate the area of contiguous shapes based on a colored outline.
+    It also provides a visual representation of the estimated area.
 
-if __name__ == "__main__":
-    src = cv.imread("E:/DataCollection/1.png")
-    ld = ShapeAnalysis()
-    ld.analysis(src)
-    # cv.waitKey(0)
-    cv.destroyAllWindows()
+    The main method for this class, get_area, calculates to area of a shape in the loaded image;
+    it sums the differences between the min and max pixels over the given axis (rows by default).
+    This find the area of each row, which has a height of 1, so it equal to its length.
 
+    AreaEstimator has four inputs, all have a default for Project 1:
 
-
-
+    Parameters:
+    -----------
+        :param filename: name and filepath of the image file to load
+        :param feet_per_pixel: the ratio of feet to pixels
+        :param color_range: the minimum and maximum BGR colors that will be picked up by cv.inRange
+        :param default_area_color: the color used to fill in the estimated area - not related to calculation+
+    """
+    def __init__(self,
+                 filename='PartyRockFire.jpeg',
+                 feet_per_pixel=8188/215,
+                 color_range=((0, 0, 118), (100, 100, 255)),
+                 default_area_color=(147, 20, 255)):
+        # open the file
+        self.img = cv.imread(filename)
+        # set color tolerance
+        self.color_lower_limit = np.array(color_range[0], np.uint8)
+        self.color_upper_limit = np.array(color_range[1], np.uint8)
+        self.area_color = default_area_color  # for filling in estimated area
+        # initialize empty array for selected pixels
+        self._selected = np.zeros(self.img.shape, np.uint8)
+        self.px_size = feet_per_pixel * feet_per_pixel
+    def show_images(self, clear_selected=True) -> None:
+        """function to show the image & exit when a key is pressed"""
+        # display selected pixels if applicable
+        if np.any(self._selected):
+            cv.imshow('Selected Area', self._selected)
+        # display the image
+        cv.imshow('Party Rock Fire (Press Any Key...)', self.img)
+        cv.waitKey(0)  # exit on any key
+        # reset the selected pixels to black
+        if clear_selected:
+            self._selected = np.zeros(self.img.shape, np.uint8)
+    def get_area(self, return_pixels=False, by_columns=False, fill_color=None) -> float:
+        """function to estimate the area of a selected contiguous shape, default row-by-row"""
+        # get an array of pixels that are within the range, value will be 255 or 0
+        in_range = cv.inRange(self.img, self.color_lower_limit, self.color_upper_limit)
+        if by_columns:  # rotate the image 90 degrees if summing by columns
+            in_range = cv.transpose(in_range)
+            self._selected = cv.transpose(self._selected)
+        # use the coordinates of the selected elements to get the rows to iterate over
+        coordinates = np.where(in_range > 0)
+        selected_rows = np.unique(coordinates[0], return_counts=True)
+        # sum the differences between the max and min value along the chosen axis
+        i, area_px = 0, 0
+        for count, row in zip(selected_rows[1], selected_rows[0]):
+            # the array is ordered, so the first element will be the min and the last will be the max
+            x_max, x_min = coordinates[1][i:i+count][-1], coordinates[1][i:i+count][0]
+            dist = x_max - x_min + 1  # add one to account for "starter pixel"
+            area_px += dist
+            i += count
+            # fill in the row on the image to show what we're calculating
+            fill_color = self.area_color if not fill_color else fill_color
+            self._selected[row, x_min:x_max] = np.full((dist-1, 3), fill_color)
+        return area_px * self.px_size if not return_pixels else area_px

@@ -1,0 +1,42 @@
+{
+    "acquisition": {
+        "files": [
+            {
+                "info": {
+                    "header": {
+                        "dicom": {
+                            "AcquisitionTime": "161151", 
+                            "ContentTime": "161153.036999", 
+                            "ContrastBolusAgent": "CONTRAST", 
+                            "ContrastBolusRoute": "IV", 
+                            "ConvolutionKernel": "B", 
+                            "DeviceSerialNumber": "00000", 
+                            "FilterType": "B", 
+                            "Modality": "CT", 
+                            "PatientName": "CHAOS^CT_SET_16", 
+                            "PatientPosition": "FFS", 
+                            "PhotometricInterpretation": "MONOCHROME2", 
+                            "ProtocolName": "T2SPIR", 
+                            "RotationDirection": "CW", 
+                            "ScanOptions": "HELIX", 
+                            "SoftwareVersions": "2.21", 
+                            "SpecificCharacterSet": "ISO_IR 100", 
+                            "StudyID": "16", 
+                            "StudyTime": "171500"
+                        }
+                    }
+                }, 
+                "modality": "CT", 
+                "name": "i0012,0000b.dcm"
+            }
+        ], 
+        "instrument": "CT"
+    }, 
+    "session": {
+        "label": "1.2.124.113532.192.70.134.138.20051021.154305.4450732", 
+        "subject": {
+            "firstname": "CT_SET_16", 
+            "lastname": "CHAOS"
+        }
+    }
+}
