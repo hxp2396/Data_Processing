@@ -1,8 +1,9 @@
-#coding=utf-8
-import scipy, numpy, shutil, os, nibabel
-import sys, getopt
+#!/usr/bin/env pytho
+# -*- coding: utf-8 -*-
+# @Author  :
+# @annotation :这个文件的目的是nii进行切片
+import shutil, os, nibabel
 import imageio
-import numpy as np
 '''
 SimpleITK 和 Nibabel 区别在于：（nii图像可以看成2维，也可以看成三维）
 SimpleITK读取数据是（X，Y，Z）显示，Nibabel读取图像是（Z，Y，X）显示，也就是Nibabel加载的图像会旋转90°，其中X表示通道数，即切片层数。详情
@@ -40,7 +41,6 @@ def niito2D(filepath):
                     # data=  data.astype(np.uint8)
                     imageio.imwrite(image_name, data)
                     print('Saved.')
-                    # move images to folder
                     print('Moving image...')
                     src = image_name
                     shutil.move(src, outputfile)
