@@ -5,6 +5,8 @@
 # @File : list_subdir_and_files.py
 # @annotation:# -*----------------------------------------------分别遍历一个目录中的所有子目录和所有文件
 import os
+file = []
+dir = []
 def list_dir(start_dir):
     dir_res = os.listdir(start_dir)
     for path in dir_res:
@@ -15,8 +17,6 @@ def list_dir(start_dir):
             dir.append(temp_path)
             list_dir(temp_path)
 def list_subdir_and_files(start_dir):
-    file = []
-    dir = []
     list_dir(start_dir)
     return file,dir
 
