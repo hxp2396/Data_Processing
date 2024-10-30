@@ -53,5 +53,5 @@ if __name__=='__main__':
     pred_path='../Desktop/CEnet'
     label_path="../Desktop/test"
     num_classes=2
-    indicators=['DSC','Jaccard',"Accuracy",'Precision','Sensitivity','Specificity','AUC','HD']###BoundaryDistance这个指标计算非常慢
+    indicators=['DSC','Jaccard',"Accuracy",'Precision','Sensitivity','Specificity','AUC','HD',"CE"]### BoundaryDistance这个指标计算非常慢 Precision等价于PPV
     calculate_indicator_2D(pred_path,label_path,indicators,num_classes=num_classes,save_file='test_result.txt')
